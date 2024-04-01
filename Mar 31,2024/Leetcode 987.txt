@@ -1,0 +1,106 @@
+class Node {
+    TreeNode root;
+    int col;
+    int level;
+}
+
+1. sorted/based on level
+2. sorted/based on value 
+
+Time: sort time + BFS/DFS time
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    class Node {
+        TreeNode root;
+        int col;
+        int level;
+        public Node(TreeNode root, int col, int level){
+            this.root = root;
+            this.col = col;
+            this.level = level; 
+        }
+    }
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if(root == null) return result;
+        Map<Integer, List<Node>> map = new HashMap<>(); //Integer-> each column, 每一列对应哪些点List<Node>(这些是我自己建立出来的)
+
+        Deque<Node> queue = new ArrayDeque<>();
+        Node newRoot = new Node(root, 0, 0); //0,0 是坐标 == col, level
+        queue.offer(newRoot);//先generate第一个点
+
+        int level = 0;
+        int minCol = 0; //leftmost node, 每往左走一步，更新最小值
+        int maxCol = 0; // 每往右走一步，更新一下最大值
+        //按照从左到右，从上到下的每一个点
+
+        //normal BFS: 同一层的点都一起遍历
+        while(!queue.isEmpty()){
+            int size = queue.size(); 
+            for(int i= 0; i < size; i++){
+                Node cur = queue.poll(); //每一层的点都拿出来
+                int colNumber = cur.col; //当前的列号
+                TreeNode curNode = cur.root; //用这个TreeNode 去generate他的左右孩子
+
+                //开始干活了，先更新col number
+                minCol = Math.min(minCol, colNumber); //有可能更新最小
+                maxCol = Math.max(maxCol, colNumber); //也有可能更新最大
+
+                //开始放了，将这个点放在这个点所对应的colNumber的list 里
+                //首先，你可能没有这一列的点
+                map.putIfAbsent(colNumber, new ArrayList<>());
+                map.get(colNumber).add(cur);
+
+                //放完这个点了，该开始看这个点的孩子们了 
+                if(curNode.left != null){
+                    Node leftNode = new Node(curNode.left, colNumber - 1, level + 1); //对应 col, level
+                    queue.offer(leftNode);
+                }
+                if(curNode.right != null){
+                    Node righttNode = new Node(curNode.right, colNumber + 1, level + 1);//对应 col, level
+                    queue.offer(righttNode);
+                }
+            }
+            //每一层都做完了，记得将level++
+            level++; 
+        }
+        //这里完成了 O(n) 的BFS 遍历
+        //到这里，我们已经将每一列的点都拿出来了，就可以开始sort了
+        //怎么sort 要看面试官了哈
+
+        for(int i = minCol; i <= maxCol; i++){//从最小列开始，到最大列，开始sort
+            List<Node> currentCol = map.get(i); //拿出这一列的所有点
+            Collections.sort(currentCol, (a,b) -> {
+                if(a.level == b.level){ //1. sorted/based on level, 2. level 一致就开始sorted by value
+                    return Integer.compare(a.root.val, b.root.val); //要用compare 而不是减法（a.root.value - b.root.value），因为可以防止超界
+                } 
+                return Integer.compare(a.level, b.level); //如果他们的level都不一致的话，直接对比他们的level就好了
+            });
+            //当前列已经sorted 好了，加到结果里。
+            //1. 如果我们结果的dataType是 List<Integer> 我们也不能直接将currentCol放在结果里，我们一定要copy一份再放到结果里
+            //2. 因为我们现在的结果的dataType是List<Integer>， 我们需要copy reference of list 再放
+            List<Integer> temp = new ArrayList<>();
+            for(Node node: currentCol){
+                temp.add(node.root.val);
+            }
+            result.add(temp);
+            
+        }
+        return result; 
+    }
+}

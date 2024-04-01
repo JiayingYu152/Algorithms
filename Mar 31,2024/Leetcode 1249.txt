@@ -1,0 +1,40 @@
+class Solution {
+    public String minRemoveToMakeValid(String s) {
+        if(s == null || s.length() == 0) return s;
+        Deque<Integer> stack = new ArrayDeque<>(); //直接用stack, 用来处理括号合法逻辑性的
+        StringBuilder sb = new StringBuilder(); //用sb来之后加结果，用来构建结果的
+        Set<Integer> set = new HashSet<>(); //这个set就是用来放 我要保留哪些括号。 现在我定义的是，我不要了的括号放在这个sete里，如果最后还有括号不在我这个set里的那都是我要的
+
+        //接下来就是遍历问题了：O(n)
+        //先遍历一遍来处理括号合理性
+        for(int i = 0; i < s.length(); i++){
+            char ch = s.charAt(i); //当前这个char是谁
+            if(ch == '('){//是左括号
+                stack.push(i); //随便加
+            } else if (ch == ')'){ //是右括号
+                //case 1: 无左 / 没有跟右括号匹配的左括号
+                if(stack.isEmpty()){
+                    set.add(i); //那这个右括号我不要了，将这个右括号放在set里 
+                } else {//case 2: 有左 , 可匹配
+                    stack.pop();
+                }
+            }
+        }
+        //上面我已经遍历完所有的右括号里，所有我不要的右括号都在set里了 
+        //那我要考虑还没有遍历的左括号，那他们就是还在stack里呗
+        while(!stack.isEmpty()){ //只要stack里还有东西，那些一定是没匹配的左括号
+            set.add(stack.pop());  //那就是都匹配不上的左括号，那就全部扔到set里
+        }
+
+        //最后再遍历一次 来构建结果
+        for(int i = 0; i < s.length(); i++){
+            if(!set.contains(i)){
+                sb.append(s.charAt(i));
+            }
+        }
+        return sb.toString();
+    }
+    //TC: O(n)
+    //SC: O(n) 
+    //括号问题大部分都是遍历问题
+}

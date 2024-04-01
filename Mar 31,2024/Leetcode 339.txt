@@ -1,0 +1,86 @@
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *     // Constructor initializes an empty nested list.
+ *     public NestedInteger();
+ *
+ *     // Constructor initializes a single integer.
+ *     public NestedInteger(int value);
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // Set this NestedInteger to hold a single integer.
+ *     public void setInteger(int value);
+ *
+ *     // Set this NestedInteger to hold a nested list and adds a nested integer to it.
+ *     public void add(NestedInteger ni);
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return empty list if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+
+DFS Recursion VERSION: 
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        if(nestedList == null || nestedList.size() == 0) return 0;
+
+        return dfs(nestedList, 1); // 1 代表基本深度
+    }
+
+    private int dfs(List<NestedInteger> nestedList, int level){
+        //先判断是否是叶子节点
+        int currentSum = 0; //这个返回的是子树的sum了
+        for(NestedInteger child: nestedList){//在这个nestedList里去检查每一个NestedInteger的child
+            //如果是Integer
+            if(child.isInteger()){
+                currentSum += child.getInteger() * level; 
+            } else {//如果不是Integer == 嵌套一个sub-root, 他是一个list，他还需要用dfs去嵌套
+                currentSum += dfs(child.getList(), level + 1);
+            }
+        }
+        return currentSum;
+    }
+}
+
+
+
+
+DFS Iteration VERSION: 
+class Solution {
+   public int depthSum(List<NestedInteger> nestedList) {
+       Deque<Node> stack = new ArrayDeque<>();
+       stack.offerLast(new Node(nestedList, 1));//1 stands for level
+       int sum = 0;
+       while(!stack.isEmpty()){
+           Node cur = stack.pollLast(); //将这个点拿出来
+           for(NestedInteger child: cur.nestedList){//去他的leaf node
+               if(child.isInteger()){
+                   sum += (cur.level * child.getInteger());
+               } else {
+                   //算不了，只能去下一层
+                   stack.offerLast(new Node(child.getList(), cur.level + 1));
+               }
+           }
+       }
+       return sum;
+   }
+   class Node{ //将recursion里的信息都包进来就好了
+       List<NestedInteger> nestedList;
+       int level;
+       public Node(List<NestedInteger> nestedList, int level){
+           this.nestedList = nestedList;
+           this.level = level;
+       }
+   }
+}
+
+
+

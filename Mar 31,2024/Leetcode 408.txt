@@ -1,0 +1,39 @@
+class Solution {
+    public boolean validWordAbbreviation(String word, String abbr) {
+        //双指针，开始遍历
+        int i = 0;
+        int j = 0; 
+
+        while(i < abbr.length() && j < word.length()){
+            char chInAbbr = abbr.charAt(i); //先拿出这个abbr，检查一下是字母还是数字
+
+            //如果题目还包含了大小写字母，需要再加一个判断条件，如下
+            // if((chInAbbr >= 'a' && chInAbbr <= 'z') || (chInAbbr >= 'A' && chInAbbr <= 'Z')){}
+            if(chInAbbr >= 'a' && chInAbbr <= 'z'){//都是字母的情况
+                if(chInAbbr != word.charAt(j)){
+                    return false;
+                }
+                i++;
+                j++;
+            } else {//是数字的情况
+                //1. 判断数字的合法性
+                //数字不合法就是零开头呗
+                if(chInAbbr == '0'){
+                    return false;
+                }
+                
+                //2. 如果数字合法，拿出数字，另一边需要跳过这个数字
+                int num = 0;
+                while(i < abbr.length() && abbr.charAt(i) >= '0' && abbr.charAt(i) <= '9'){
+                    num = num * 10 + (abbr.charAt(i) - '0');
+                    i++;
+                }
+                j += num; 
+            }
+        }
+        if(i == abbr.length() && j == word.length()){ //他们一定要同时结束才能return true
+            return true;
+        } 
+        return false; 
+    }
+}
