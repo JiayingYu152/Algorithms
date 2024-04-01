@@ -1,0 +1,15 @@
+class Solution {
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for(int num: nums){
+            //我们不需要严格要求k size，我们可以做到放一个，踢一个
+            minHeap.offer(num);
+            if(minHeap.size() > k){
+                minHeap.poll();//直接踢
+            }
+        }
+        return minHeap.peek();
+    }   
+}
+
+最小堆的方法来做的 

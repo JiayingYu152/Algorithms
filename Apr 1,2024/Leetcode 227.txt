@@ -1,0 +1,46 @@
+class Solution {
+    public int calculate(String s) {
+        if(s == null || s.length() == 0) return 0;
+        int result = 0; //用来存结果
+        int prev = 0; //前一次的计算结果，先默认为零
+        char sign = '+'; 
+        int index = 0;
+
+        while(index < s.length()){
+            char cur = s.charAt(index);
+            if(isDigit(cur)){ //如果当前char是数字
+                int num  = cur - '0';
+                while(index + 1 < s.length() && isDigit(s.charAt(index + 1))){
+                    num = num * 10 + (s.charAt(index + 1) - '0');
+                    index++;
+                }
+                //我现在将数字遍历完了，index会指向一个符号
+                    //在这里 prev是我前面的这个数
+                if(sign == '+'){
+                    result += prev;
+                    prev = num;
+                } else if(sign == '-'){
+                    result += prev;
+                    prev = -1 * num; 
+                } else if(sign == '*'){
+                    prev = prev * num;
+                } else {
+                    prev = prev / num;
+                }
+
+            } else if (isOperator(cur)){//如果当前char是符号，就将符号赋予给sign
+                sign = cur;//当前是什么就是什么
+            }
+            index++;
+        }
+        //最后一个char 一定是一个数字，直接加上即可
+        result += prev;
+        return result;
+    }
+    private boolean isDigit(char ch){
+        return ch >= '0' && ch <= '9';
+    }
+    private boolean isOperator(char ch){
+        return ch == '+' || ch == '-' || ch == '*' || ch =='/';
+    }
+}

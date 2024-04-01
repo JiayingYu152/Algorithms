@@ -1,0 +1,20 @@
+class Solution {
+    //Leetcode中定义的int[] 并不好，当你不知道长度的时候，你怎么能定义array呢！！如果是自己写的话，应该定义 List<Integer>
+    public int[] findBuildings(int[] heights) {
+        if(heights == null || heights.length == 0) return heights;
+        List<Integer> result = new ArrayList<>();
+        int max = heights[heights.length - 1];//从右往左遍历
+        result.add(heights.length - 1); //记得把最后一个点先加上
+        for(int i = heights.length - 2; i >= 0; i--){
+            if(heights[i] > max){ //只要你遍历的高度大于最大高度，那就更新呗
+                result.add(i);
+                max = heights[i];
+            }
+        }
+        int[] res = new int[result.size()];
+        for(int i = 0; i < res.length; i++){
+            res[i] = result.get(res.length - 1 - i);
+        }
+        return res;
+    }
+}

@@ -1,0 +1,43 @@
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+    public Node parent;
+};
+*/
+
+class Solution {
+    public Node lowestCommonAncestor(Node one, Node two) {
+        int oneDepth = getDepth(one);
+        int twoDepth = getDepth(two);
+
+        while(oneDepth != twoDepth){
+            if(oneDepth > twoDepth){
+                oneDepth--;
+                one = one.parent;
+            } else {
+                twoDepth--;
+                two = two.parent;
+            }
+        }
+
+        //现在应该是拉到同一高度了,如果还不是同一高度的话，那就各自拉各自的高度直到一致为止
+        while(one != two){
+            one = one.parent;
+            two = two.parent;
+        }
+        return one; 
+
+    }
+
+    private int getDepth(Node node){
+        int depth = 0;
+        while(node != null){
+            node = node.parent;
+            depth++;
+        }
+        return depth;
+    }
+}

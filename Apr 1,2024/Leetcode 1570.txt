@@ -1,0 +1,40 @@
+class SparseVector {
+    Map<Integer, Integer> indexMap; //每一个不是零的值对应的index: index, value
+    SparseVector(int[] nums) {
+        this.indexMap = new HashMap<>();
+        for(int i = 0; i < nums.length; i++){//遍历一遍，不是零就将这个值和他的index记录在map里
+            if(nums[i] == 0){
+                continue;
+            }
+            indexMap.put(i, nums[i]);
+        }
+    }
+    
+	// Return the dotProduct of two sparse vectors
+    public int dotProduct(SparseVector vec) {
+        if(indexMap.size() == 0 || vec.indexMap.size() == 0){//只要两个vectors里其中一个vector都没有数字，那百分百结果是零
+            return 0;
+        }
+
+        //这里再做一个优化，去乘以那个零多一少的vec呗
+        if(indexMap.size() > vec.indexMap.size()){
+            return vec.dotProduct(this); //this 表示当前的这个object
+        }
+
+        int sum = 0;
+        for(Map.Entry<Integer, Integer> entry : indexMap.entrySet()){//遍历这个map里的每个entry
+            int index = entry.getKey();
+            Integer value = vec.indexMap.get(index);
+            if(value == null){
+                continue;
+            }
+            sum += (entry.getValue() * value);
+        }
+        return sum;
+    }
+}
+
+// Your SparseVector object will be instantiated and called as such:
+// SparseVector v1 = new SparseVector(nums1);
+// SparseVector v2 = new SparseVector(nums2);
+// int ans = v1.dotProduct(v2);
